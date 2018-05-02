@@ -1,6 +1,6 @@
 LIGHT_FLAGS = -g -std=gnu++14 -I Include
 HEAVY_FLAGS = -g -std=gnu++14 -O2 -Wall -Werror -pedantic-errors -Wextra -fsanitize=undefined
-OBJECTS = Source/lexer.cpp Source/main.cpp Source/parser.cpp
+OBJECTS = Source/lexer.cpp Source/main.cpp 
 
 debug :
 	g++ $(LIGHT_FLAGS) $(OBJECTS) -o a.out
