@@ -1,5 +1,21 @@
-#include "lexer.hpp"
 #include <iostream>
+
+#include "lexer.hpp"
+#include "parser.hpp"
+
+void test_parser (const std::string &name)
+{
+    Scanner scaner(name);
+    Lex_seq seq(scaner);
+    Parser parser(seq);
+    try {
+        parser.parse();
+        parser.print_poliz();
+        parser.print_expression();
+    } catch (const Exception &excp) {
+        std::cout << excp << std::endl;
+    } 
+}
 
 int main() {
   try {
@@ -12,5 +28,6 @@ int main() {
   } catch (Exception e) {
     std::cout << e << std::endl;
   }
+  test_parser("Tests/parser0.txt");
   return 0;
 }

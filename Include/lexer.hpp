@@ -12,14 +12,16 @@ enum type_of_lex {
   LEX_PLUS,    //3
   LEX_TIMES,   //4
   LEX_LPAREN,  //5
-  LEX_RPAREN,  //6
-  LEX_FIN      //7
+  LEX_COMMA,   //6
+  LEX_RPAREN,  //7
+  LEX_FIN      //8
 };
 
 enum types {
   TYPE_NULL,
   TYPE_INT,
-  TYPE_STRING
+  TYPE_STRING,
+  TYPE_FUNC
 };
 
 class Type {
@@ -65,8 +67,8 @@ public :
   int str_num;
   int char_num;
   Scanner (const std::string& name) : 
-  state(S), read_next(true), str_num(1), 
-  char_num(0) { file.open(name); }
+    state(S), read_next(true), str_num(1), 
+    char_num(0) { file.open(name); }
   Lex get_lex ();
 
 };  

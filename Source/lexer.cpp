@@ -24,14 +24,17 @@ std::ostream& operator<<(std::ostream& str, Lex lex)
     case LEX_LPAREN :
       str << "(";
       break;
+    case LEX_COMMA :
+      str << ',';
+      break;
     case LEX_RPAREN :
       str << ")";
       break;
     case LEX_NULL :
-      //str << "LEX_NULL" << lex.name;
+      str << "LEX_NULL" << lex.name;
       break;
     case LEX_FIN :
-      //str << "LEX_FIN" << lex.name;
+      str << "LEX_FIN" << lex.name;
       break;
     default :
       str << lex.lex_type << ", " << lex.name;
@@ -42,17 +45,17 @@ std::ostream& operator<<(std::ostream& str, Lex lex)
 std::ostream& operator<<(std::ostream& str, Type type)
 {
   if (type.arr_dim != 0) {
-    str << type.arr_dim << "-dimensional array of ";
+    str << "function that returns ";
   }
   switch (type.type) {
     case TYPE_NULL :
-      str << "TYPE_NULL, ";
+      str << "TYPE_NULL ";
       return str;
     case TYPE_INT :
       str << "integer ";
       return str;
     case TYPE_STRING :
-      str << "string, ";
+      str << "string ";
       return str;
   default :
     str << type.type;
@@ -133,6 +136,9 @@ Lex Scanner::get_lex ()
         case '(' : 
           state = S; 
           return Lex (LEX_LPAREN);
+        case ',' :
+          state = S;
+          return Lex (LEX_COMMA);
         case ')' : 
           state = S; 
           return Lex (LEX_RPAREN);
