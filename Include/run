@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for var in $(ls ./Tests/) 
+do
+echo
+echo -e "\e[31m$var\e[0m"
+echo
+./a.out ./Tests/$var
+#cat $var
+done

@@ -5,8 +5,8 @@
 
 void test_parser (const std::string &name)
 {
-    Scanner scaner(name);
-    Lex_seq seq(scaner);
+    Scanner scanner(name);
+    Lex_seq seq(scanner);
     Parser parser(seq);
     try {
         parser.parse();
@@ -17,9 +17,9 @@ void test_parser (const std::string &name)
     } 
 }
 
-int main() {
+int main(int argc, char* argv[]) {
   try {
-    Scanner scan("Tests/lexer0.txt");
+    Scanner scan(argv[1]);
     Lex_seq a(scan);
     for (Lex b : a) {
       std::cout << b << ' ' ;
@@ -28,6 +28,6 @@ int main() {
   } catch (Exception e) {
     std::cout << e << std::endl;
   }
-  test_parser("Tests/parser0.txt");
+  test_parser(argv[1]);
   return 0;
 }

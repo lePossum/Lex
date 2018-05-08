@@ -1,3 +1,3 @@
-fki(j)
-i + i + k + j + fii(j)
+fkij(j*k+i,i) + 15
+i + i + k + j + fii(j*i+k)
 

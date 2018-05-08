@@ -211,16 +211,16 @@ void Parser::print_expression ()
         st_poliz.pop();
         Lex lex2 = st_poliz.top();
         st_poliz.pop();
-        std::cout << i << ") " << lex1 << ' ' << lex << ' ' << lex2 << " -----> " << Type(TYPE_INT, 0) << std::endl;
-        st_poliz.push(Lex(lex1.get_lex_type(), "Expr" + std::to_string(i), lex1.get_type()));
+        std::cout << ' ' << i << ") " << lex1 << ' ' << lex << ' ' << lex2 << " - " << Type(TYPE_INT, 0) << std::endl;
+        st_poliz.push(Lex(lex1.get_lex_type(), "Expression " + std::to_string(i), lex1.get_type()));
         ++i;
       }
     }
   }
-  std::cout << "Standalone expresions : " << std::endl;
+  std::cout << "Subexpressions: " << std::endl;
   while (!st_poliz.empty()) {
     Lex lex = st_poliz.top();
-    std::cout << i << ") " << st_poliz.top() << " -----> " << lex.get_type() << std::endl;
+    std::cout << ' ' << i << ") " << st_poliz.top() << " - " << lex.get_type() << std::endl;
     ++i;
     st_poliz.pop();
   }

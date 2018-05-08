@@ -5,7 +5,7 @@ OBJECTS = Source/lexer.cpp Source/main.cpp Source/parser.cpp
 debug :
 	g++ $(LIGHT_FLAGS) $(OBJECTS) -o a.out
 full :
-	g++ $(HEAVY_FLAGS) $(OBJECTS) -o b.out
+	g++ $(HEAVY_FLAGS) $(OBJECTS) -o a.out
 clean :
 	rm -rf *.out
 	rm -rf Coverage	
@@ -14,9 +14,8 @@ clean :
 	rm -rf 1.gcda
 	rm -rf 1.gcno
 coverage :
-	g++ $(LIGHT_FLAGS) --coverage $(OBJECTS) -o cov.out
-	./cov.out
-gcover : coverage
+	g++ $(LIGHT_FLAGS) --coverage $(OBJECTS) -o a.out
+gcover : run
 	gcov main.cpp -b
 	mkdir -p Coverage
 	mv *.gcda *.gcno *.gcov Coverage
@@ -42,3 +41,7 @@ lcoverage : gcover
 	rm -rf home
 download : 
 	git clone https://github.com/linux-test-project/lcov.git
+delete : 
+	rm -rf lcov
+run : coverage
+	./Include/run
