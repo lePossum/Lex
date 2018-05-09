@@ -26,6 +26,7 @@ public :
   void parse ();
   void print_poliz ();
   void print_expression ();
+  void print_stack();
 };
 
 #endif

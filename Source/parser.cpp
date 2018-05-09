@@ -12,7 +12,7 @@ void Parser::parse ()
 {
   get_lex();
   S();
-  std::cout << "*** S() done ***" << std::endl;
+  //std::cout << "*** S() done ***" << std::endl;
 }
 
 void Parser::S ()
@@ -75,19 +75,6 @@ void Parser::Mult_expr ()
     poliz.push_back(cur_lex);
     get_lex();
     break;
-  case LEX_LPAREN :
-    //get_lex();
-    //std::cout << "Here cur_lex " << cur_lex << std::endl;
-    Func();
-    std::cout << cur_lex << ' ' << cur_lex.get_type() << std::endl;
-    if (cur_type != LEX_RPAREN) {
-    throw Exception("Wrong bracket expression", cur_pos.get_str_num(), cur_pos.get_char_num());
-    }
-    //std::cout << cur_lex << std::endl;
-    poliz.push_back(cur_lex);
-    get_lex();
-    std::cout << "After brackets " << cur_lex << ' ' << cur_type << std::endl;
-    break;
   default :
     throw Exception("Wrong lexem", cur_pos.get_str_num(), cur_pos.get_char_num());
   }
@@ -97,33 +84,37 @@ void Parser::Func ()
 {
   //std::cout << cur_lex << std::endl;
   if (cur_type == LEX_LPAREN) {
-  std::string func_name = poliz[poliz.size() - 1].get_name();
-  std::cout << "In Func() func_name is " << func_name << std::endl;
-  poliz.push_back(cur_lex);
-  get_lex();
-  for (int i = 2; i < func_name.size(); i++){
-    if (func_name[i] == 'i' || func_name[i] == 'j' || func_name[i] == 'k'){
-    st_type.push(Type(TYPE_INT, 0));
-    // std::cout << "In cycle cur_lex: " << cur_lex << cur_lex.get_type() << std::endl; 
-    Expr();
-    check_op();
-    // std::cout << cur_lex << ' ' << cur_type << std::endl;
-    // std::cout <<std::endl << std::endl;
-    // for (auto n : poliz) {
-    //   std::cout << n<< std::endl;
-    // }
-    // std::cout <<std::endl << std::endl;
-    } else if (func_name[i] == 's' || func_name[i] == 't') {
-
-    } else if (func_name[i] == 'f') {
-    std::cout << "Bad recursive function" << std::endl;
-    }
-    if (cur_type != LEX_COMMA && cur_type != LEX_RPAREN) {
-    throw Exception("Wrong factual elements of function",cur_pos.get_str_num(), cur_pos.get_char_num());
-    }
+    std::string func_name = poliz[poliz.size() - 1].get_name();
+    //std::cout << "In Func() func_name is " << func_name << std::endl;
     poliz.push_back(cur_lex);
     get_lex();
-  }
+    for (int i = 2; i < func_name.size(); i++){
+      if (func_name[i] == 'i' || func_name[i] == 'j' || func_name[i] == 'k'){
+        st_type.push(Type(TYPE_INT, 0));
+        // std::cout << "In cycle cur_lex: " << cur_lex << cur_lex.get_type() << std::endl; 
+        Expr();
+        check_op();
+        // std::cout << cur_lex << ' ' << cur_type << std::endl;
+        // std::cout <<std::endl << std::endl;
+        // for (auto n : poliz) {
+        //   std::cout << n<< std::endl;
+        // }
+        // std::cout <<std::endl << std::endl;
+      } else if (func_name[i] == 's' || func_name[i] == 't') {
+        st_type.push(Type(TYPE_STRING, 0));
+        Expr();
+        check_op();
+        if (i > 1) st_type.pop();
+      } else if (func_name[i] == 'f') {
+        std::cout << "Bad recursive function" << std::endl;
+        throw Exception("Wrong function identifier",cur_pos.get_str_num(), cur_pos.get_char_num());
+      }
+      if (cur_type != LEX_COMMA && cur_type != LEX_RPAREN) {
+        throw Exception("Wrong factual elements of function",cur_pos.get_str_num(), cur_pos.get_char_num());
+      }
+      poliz.push_back(cur_lex);
+      get_lex();
+    }
   }
 }
 
@@ -134,27 +125,27 @@ void Parser::check ()
   int cnt = -1;
   bool func_flag = false;
   for (auto c : name) {
-  //std::cout << '|' << c << "|\n";
-  if (c != 'i' && c != 'j' && c != 'k' && c != 's' && c != 't' && c != 'a' && c != 'f') {
-    throw Exception("Wrong identificator", cur_pos.get_str_num(), cur_pos.get_char_num());
-  } else {
-    if (c == 'f') {
-    func_flag = true;
+    //std::cout << '|' << c << "|\n";
+    if (c != 'i' && c != 'j' && c != 'k' && c != 's' && c != 't' && c != 'a' && c != 'f') {
+      throw Exception("Wrong identifier", cur_pos.get_str_num(), cur_pos.get_char_num());
     } else {
-    ++cnt;
-    letter = c;
-    if (func_flag) break;
+      if (c == 'f') {
+        func_flag = true;
+      } else {
+        ++cnt;
+        letter = c;
+        if (func_flag) break;
+      }
     }
   }
-  }
   if (letter == 'i' || letter == 'j' || letter == 'k') {
-  cur_lex.set_type(Type(TYPE_INT, cnt));
+    cur_lex.set_type(Type(TYPE_INT, cnt));
   } else if (letter == 's' || letter == 't') { 
-  cur_lex.set_type(Type(TYPE_STRING, cnt));
+    cur_lex.set_type(Type(TYPE_STRING, cnt));
   } else if (letter == 'f') {
-  check();
+    check();
   } else { 
-  throw Exception("Wrong identificator", cur_pos.get_str_num(), cur_pos.get_char_num());
+    throw Exception("Wrong identifier", cur_pos.get_str_num(), cur_pos.get_char_num());
   }
 }
 
@@ -163,24 +154,27 @@ void Parser::check_op ()
 {
   Type type1, type2;
   type2 = st_type.top();
+  //print_poliz();
   st_type.pop();
   type1 = st_type.top();
   //std::cout << type1 << " " << type2 << std::endl;
   st_type.pop();
   //if (type1 == Type(TYPE_INT, 0) && type2 == Type(TYPE_INT, 0)) {
   if (type1 == type2) {
-    st_type.push(type1);
+    //if (type1 == Type(TYPE_INT,0))
+      st_type.push(type1);
   } else {
+    print_stack();
     throw Exception("Wrong types", cur_pos.get_str_num(), cur_pos.get_char_num());
   }
 }
 
 void Parser::print_poliz ()
 {
-  for (const Lex &lex : poliz) {
-    std::cout << lex << ' ';
+  for (const Lex &l : poliz) {
+    std::cout << l << ' ';
   }
-  std::cout << std::endl;
+  std::cout << std::endl << std::endl;
 }
 
 void Parser::print_expression ()
@@ -217,11 +211,22 @@ void Parser::print_expression ()
       }
     }
   }
-  std::cout << "Subexpressions: " << std::endl;
+  std::cout << std::endl << "Subexpressions: " << std::endl;
   while (!st_poliz.empty()) {
     Lex lex = st_poliz.top();
     std::cout << ' ' << i << ") " << st_poliz.top() << " - " << lex.get_type() << std::endl;
     ++i;
     st_poliz.pop();
+  }
+}
+
+void Parser::print_stack () {
+  std::cout << "STACK\n";
+  int i = 0;
+  while (!st_type.empty()) {
+    auto lex = st_type.top();
+    std::cout << ' ' << i << ") " << st_type.top() << std::endl;
+    ++i;
+    st_type.pop();
   }
 }
