@@ -6,70 +6,6 @@
 
 #include "lexer.hpp"
 
-std::ostream& operator<<(std::ostream& str, Lex lex) 
-{
-  switch (lex.lex_type) {
-    case LEX_ID :
-      str << lex.name;
-      break;
-    case LEX_NUM :
-      str << lex.name;
-      break;
-    case LEX_PLUS :
-      str << "+";
-      break;
-    case LEX_TIMES :
-      str << "*";
-      break;
-    case LEX_LPAREN :
-      str << "(";
-      break;
-    case LEX_COMMA :
-      str << ',';
-      break;
-    case LEX_RPAREN :
-      str << ")";
-      break;
-    case LEX_NULL :
-      str << "LEX_NULL" << lex.name;
-      break;
-    case LEX_FIN :
-      str << "LEX_FIN" << lex.name;
-      break;
-    default :
-      str << lex.lex_type << ", " << lex.name;
-    }
-  return str;
-}
-
-std::ostream& operator<<(std::ostream& str, Type type)
-{
-  if (type.arr_dim != 0) {
-    str << "function that returns ";
-  }
-  switch (type.type) {
-    case TYPE_NULL :
-      str << "TYPE_NULL ";
-      return str;
-    case TYPE_INT :
-      str << "integer ";
-      return str;
-    case TYPE_STRING :
-      str << "string ";
-      return str;
-  default :
-    str << type.type;
-    return str;
-  }
-}
-      
-std::ostream& operator<<(std::ostream& str, Exception temp)
-{
-  str << temp.str_num << ":" 
-    << temp.char_num << ": " << temp.reason;
-  return str;
-}
-
 Lex Scanner::get_lex () 
 {
   do {
@@ -129,21 +65,22 @@ Lex Scanner::get_lex ()
         switch (c) {
         case '+' :
           state = S; 
-          return Lex (LEX_PLUS);
+          return Lex (LEX_PLUS, " + ");
         case '*' : 
           state = S; 
-          return Lex (LEX_TIMES);
+          return Lex (LEX_TIMES, " * ");
         case '(' : 
           state = S; 
-          return Lex (LEX_LPAREN);
+          return Lex (LEX_LPAREN, "(");
         case ',' :
           state = S;
-          return Lex (LEX_COMMA);
+          return Lex (LEX_COMMA, ", ");
         case ')' : 
           state = S; 
-          return Lex (LEX_RPAREN);
+          return Lex (LEX_RPAREN, ")");
         default : 
-          throw Exception("Wrong character", str_num, char_num);
+          throw Exception("Wrong character", str_num, 
+            char_num, TYPE_LEX);
         }
     }
   } while (true);
@@ -166,9 +103,71 @@ Lex_seq_iter& Lex_seq_iter::operator++ ()
   return *this;
 }
 
-Lex_seq_iter Lex_seq_iter::operator++ (int) 
+std::ostream& operator<<(std::ostream& str, Lex lex) 
 {
-  Lex_seq_iter tmp(scanner, lex_num);
-  ++*this;
-  return tmp;
+  switch (lex.lex_type) {
+    case LEX_ID :
+      str << lex.name;
+      break;
+    case LEX_NUM :
+      str << lex.name;
+      break;
+    case LEX_PLUS :
+      str << "+";
+      break;
+    case LEX_TIMES :
+      str << "*";
+      break;
+    case LEX_LPAREN :
+      str << "(";
+      break;
+    case LEX_COMMA :
+      str << ',';
+      break;
+    case LEX_RPAREN :
+      str << ")";
+      break;
+    default :
+      str << lex.lex_type << ", " << lex.name;
+    }
+  return str;
+}
+
+std::ostream& operator<<(std::ostream& str, Type type_in)
+{
+  if (type_in.if_func != 0) {
+    str << "function that returns ";
+  }
+  switch (type_in.type) {
+    case TYPE_INT :
+      str << "integer";
+      return str;
+    case TYPE_STRING :
+      str << "string";
+      return str;
+  default :
+    str << type_in.type;
+    return str;
+  }
+}
+      
+std::ostream& operator<<(std::ostream& str, Exception cur_exp)
+{
+  switch (cur_exp.type) {
+    case TYPE_LEX :
+      str << "Lexical error, ";
+      break;
+    case TYPE_SYN :
+      str << "Syntactic error, ";
+      break;
+    case TYPE_SEM :
+      str << "Semantic error, ";
+      break;
+    default:
+      str << "Unknown type of errors, ";
+      break;
+  }
+  str << cur_exp.str_num << ":" 
+    << cur_exp.char_num << ": " << cur_exp.reason;
+  return str;
 }

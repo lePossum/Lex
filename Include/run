@@ -5,6 +5,7 @@ do
 echo
 echo -e "\e[31m$var\e[0m"
 echo
+cat ./Tests/$var
+echo
 ./a.out ./Tests/$var
-#cat $var
 done

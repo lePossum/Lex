@@ -17,6 +17,12 @@ enum type_of_lex {
   LEX_FIN      //8
 };
 
+enum excp_types{
+  TYPE_LEX, 
+  TYPE_SYN, 
+  TYPE_SEM
+};
+
 enum types {
   TYPE_NULL,
   TYPE_INT,
@@ -27,15 +33,15 @@ enum types {
 class Type {
   public :
   types type;
-  int arr_dim;
-  Type (types type = TYPE_NULL, int arr_dim = 0) 
-    : type(type), arr_dim(arr_dim) {}
+  int if_func;
+  Type (types type = TYPE_NULL, int if_func = 0) 
+    : type(type), if_func(if_func) {}
   bool operator == (const Type &type) { 
     return (this->type == type.type && 
-      this->arr_dim == type.arr_dim); }
+      this->if_func == type.if_func); }
   bool operator != (const Type &type) { 
     return (this->type != type.type || 
-      this->arr_dim != type.arr_dim); }
+      this->if_func != type.if_func); }
 };
 
 std::ostream& operator << (std::ostream&, Type);
@@ -115,16 +121,17 @@ class Lex_seq {
   }
 };
 
-class Exception {
-   
-  public :
+struct Exception {
+public:
   std::string reason;
   int str_num;
   int char_num;
+  excp_types type;
   Exception (const std::string &reason, 
-    const int str_num, const int char_num) 
+    const int str_num, const int char_num, 
+    const excp_types type) 
     : reason(reason), str_num(str_num), 
-    char_num(char_num) {}
+    char_num(char_num), type(type) {}
 };
 
 std::ostream& operator<<(std::ostream&, Exception);
