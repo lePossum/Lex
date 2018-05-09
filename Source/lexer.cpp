@@ -6,7 +6,7 @@
 
 #include "lexer.hpp"
 
-Lex Scanner::get_lex () 
+Lex Scanner::get_lex() 
 {
   do {
     if (read_next) {
@@ -86,7 +86,7 @@ Lex Scanner::get_lex ()
   } while (true);
 }            
 
-Lex Lex_seq_iter::operator* () 
+Lex Lexem_iterator::operator*() 
 {
   if (lex.get_lex_type() == LEX_FIN) {
     lex_num = -1;
@@ -94,7 +94,7 @@ Lex Lex_seq_iter::operator* ()
   return lex;
 }
 
-Lex_seq_iter& Lex_seq_iter::operator++ () 
+Lexem_iterator& Lexem_iterator::operator++() 
 {
   if (lex_num != -1) {
     ++lex_num;
@@ -151,9 +151,9 @@ std::ostream& operator<<(std::ostream& str, Type type_in)
   }
 }
       
-std::ostream& operator<<(std::ostream& str, Exception cur_exp)
+std::ostream& operator<<(std::ostream& str, Exception cur_excp)
 {
-  switch (cur_exp.type) {
+  switch (cur_excp.type) {
     case TYPE_LEX :
       str << "Lexical error, ";
       break;
@@ -167,7 +167,7 @@ std::ostream& operator<<(std::ostream& str, Exception cur_exp)
       str << "Unknown type of errors, ";
       break;
   }
-  str << cur_exp.str_num << ":" 
-    << cur_exp.char_num << ": " << cur_exp.reason;
+  str << cur_excp.str_num << ":" 
+    << cur_excp.char_num << ": " << cur_excp.reason;
   return str;
 }

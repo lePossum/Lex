@@ -1,64 +1,64 @@
 #include "parser.hpp"
 
-void Parser::get_lex () 
+void Parser::get_lex() 
 {
   ++cur_pos;
   cur_lex = *cur_pos;
   cur_type = cur_lex.get_lex_type();
 }   
 
-void Parser::parse ()
+void Parser::parse()
 {
   get_lex();
   S();
 }
 
-void Parser::S ()
+void Parser::S()
 {
   while (cur_type != LEX_FIN) {
   Expr();
   }
 }
 
-void Parser::Expr ()
+void Parser::Expr()
 {
   Plus_expr();
   Plus_expr0();
 }
 
-void Parser::Plus_expr0 ()
+void Parser::Plus_expr0()
 {
   if (cur_type == LEX_PLUS) {
   get_lex();
   Plus_expr();
-  check_op();
+  check_types();
   poliz.push_back(Lex(LEX_PLUS));
   Plus_expr0();
   }
 }
 
-void Parser::Plus_expr ()
+void Parser::Plus_expr()
 {
   Mult_expr();
   Mult_expr0();
 }
 
-void Parser::Mult_expr0 ()
+void Parser::Mult_expr0()
 {
   if (cur_type == LEX_TIMES) {
   get_lex();
   Mult_expr();
-  check_op();
+  check_types();
   poliz.push_back(Lex(LEX_TIMES));
   Mult_expr0();
   }
 }
 
-void Parser::Mult_expr ()
+void Parser::Mult_expr()
 {
   switch (cur_type) {
   case LEX_ID : 
-    check();
+    check_name();
     st_type.push(cur_lex.get_type());
     poliz.push_back(cur_lex);
     get_lex();
@@ -76,7 +76,7 @@ void Parser::Mult_expr ()
   }
 }
 
-void Parser::Func ()
+void Parser::Func()
 {
   if (cur_type == LEX_LPAREN) {
     std::string func_name = poliz[poliz.size() - 1].get_name();
@@ -86,14 +86,13 @@ void Parser::Func ()
       if (func_name[i] == 'i' || func_name[i] == 'j' || func_name[i] == 'k'){
         st_type.push(Type(TYPE_INT, 0));
         Expr();
-        check_op();
+        check_types();
       } else if (func_name[i] == 's' || func_name[i] == 't') {
         st_type.push(Type(TYPE_STRING, 0));
         Expr();
-        check_op();
+        check_types();
         if (i > 1) st_type.pop();
       } else if (func_name[i] == 'f') {
-        std::cout << "Bad recursive function" << std::endl;
         throw Exception("Wrong function identifier",cur_pos.get_str_num(), 
           cur_pos.get_char_num(), TYPE_SYN);
       }
@@ -107,7 +106,7 @@ void Parser::Func ()
   }
 }
 
-void Parser::check ()
+void Parser::check_name()
 {
   std::string name = cur_lex.get_name();
   char letter = 0;
@@ -132,7 +131,7 @@ void Parser::check ()
   } else if (letter == 's' || letter == 't') { 
     cur_lex.set_type(Type(TYPE_STRING, cnt));
   } else if (letter == 'f') {
-    check();
+    check_name();
   } else { 
     throw Exception("Wrong identifier", cur_pos.get_str_num(), 
       cur_pos.get_char_num(), TYPE_LEX);
@@ -140,7 +139,7 @@ void Parser::check ()
 }
 
 
-void Parser::check_op ()
+void Parser::check_types()
 {
   Type type1, type2;
   type2 = st_type.top();
@@ -155,7 +154,7 @@ void Parser::check_op ()
   }
 }
 
-void Parser::print_poliz ()
+void Parser::print_poliz()
 {
   std::cout << "Poliz: ";
   for (const Lex &l : poliz) {
@@ -164,7 +163,7 @@ void Parser::print_poliz ()
   std::cout << std::endl << std::endl;
 }
 
-void Parser::print_expression ()
+void Parser::print_expression()
 {
   std::stack<Lex> st_poliz;
   Lex lex0;

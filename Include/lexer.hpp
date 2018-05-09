@@ -17,7 +17,7 @@ enum type_of_lex {
   LEX_FIN      //8
 };
 
-enum excp_types{
+enum excp_types {
   TYPE_LEX, 
   TYPE_SYN, 
   TYPE_SEM
@@ -36,15 +36,15 @@ class Type {
   int if_func;
   Type (types type = TYPE_NULL, int if_func = 0) 
     : type(type), if_func(if_func) {}
-  bool operator == (const Type &type) { 
+  bool operator==(const Type &type) { 
     return (this->type == type.type && 
       this->if_func == type.if_func); }
-  bool operator != (const Type &type) { 
+  bool operator!=(const Type &type) { 
     return (this->type != type.type || 
       this->if_func != type.if_func); }
 };
 
-std::ostream& operator << (std::ostream&, Type);
+std::ostream& operator<<(std::ostream&, Type);
 
 class Lex {
   type_of_lex lex_type;
@@ -75,49 +75,47 @@ public :
   Scanner (const std::string& name) : 
     state(S), read_next(true), str_num(1), 
     char_num(0) { file.open(name); }
-  Lex get_lex ();
+  Lex get_lex();
 
 };  
 
-class Lex_seq_iter : 
-  public std::iterator<std::input_iterator_tag, std::string> {
-  
+class Lexem_iterator : public std::iterator 
+  <std::input_iterator_tag, std::string> {
   Scanner *scanner;
   int lex_num;
   Lex lex;
 public :
-  int get_str_num () { return scanner->str_num; }
-  int get_char_num () { return scanner->char_num; }
-  int char_num;
-  Lex_seq_iter (Scanner *scanner, int lex_num) 
+  int get_str_num() { return scanner->str_num; }
+  int get_char_num() { return scanner->char_num; }
+  //int char_num;
+  Lexem_iterator (Scanner *scanner, int lex_num) 
     : scanner(scanner), lex_num(lex_num) {};
-  Lex operator* (); 
-  Lex_seq_iter& operator++ ();
-  Lex_seq_iter operator++ (int);
-  bool operator== (Lex_seq_iter iter) const {
+  Lex operator*(); 
+  Lexem_iterator& operator++();
+  Lexem_iterator operator++(int);
+  bool operator==(Lexem_iterator iter) const {
     return (lex_num == iter.lex_num);
   }
-  bool operator!= (Lex_seq_iter iter) const {
+  bool operator!=(Lexem_iterator iter) const {
     return (lex_num != iter.lex_num);
   }
-  
 };
 
-class Lex_seq {
+class Lexem_sequence {
   Scanner *scanner;
   public :
-  Lex_seq (Scanner &scanner) : scanner(&scanner) {}
-  Lex_seq_iter begin () {
-    return Lex_seq_iter(scanner, 0);
+  Lexem_sequence(Scanner &scanner) : scanner(&scanner) {}
+  Lexem_iterator begin() {
+    return Lexem_iterator(scanner, 0);
   }
-  Lex_seq_iter end () {
-    return Lex_seq_iter(scanner, -1);
+  Lexem_iterator end() {
+    return Lexem_iterator(scanner, -1);
   }
-  Lex_seq_iter begin () const {
-    return Lex_seq_iter(scanner, 0);
+  Lexem_iterator begin() const {
+    return Lexem_iterator(scanner, 0);
   }
-  Lex_seq_iter end () const {
-    return Lex_seq_iter(scanner, -1);
+  Lexem_iterator end() const {
+    return Lexem_iterator(scanner, -1);
   }
 };
 
@@ -127,7 +125,7 @@ public:
   int str_num;
   int char_num;
   excp_types type;
-  Exception (const std::string &reason, 
+  Exception(const std::string &reason, 
     const int str_num, const int char_num, 
     const excp_types type) 
     : reason(reason), str_num(str_num), 

@@ -6,26 +6,29 @@
 #include <vector>
 
 class Parser {   
-  Lex_seq_iter cur_pos;
+  std::vector<Lex> poliz;
+  std::stack<Type> st_type;
+  Lexem_iterator cur_pos;
   Lex cur_lex;
   type_of_lex cur_type;
-  std::stack<Type> st_type;
-  std::vector<Lex> poliz;
-  void get_lex ();
-  void S ();
-  void Expr ();
-  void Plus_expr ();
-  void Plus_expr0 ();
-  void Mult_expr ();
-  void Mult_expr0 ();
-  void Func ();
-  void check ();
-  void check_op ();
+  
+  void S();
+  void Expr();
+  void Plus_expr();
+  void Plus_expr0();
+  void Mult_expr();
+  void Mult_expr0();
+  void Func();
+
+  void get_lex();
+  void check_name();
+  void check_types();
 public :
-  Parser (Lex_seq &lex_seq) : cur_pos(lex_seq.begin()) {}
-  void parse ();
-  void print_poliz ();
-  void print_expression ();
+  Parser(Lexem_sequence &lex_seq) : 
+    cur_pos(lex_seq.begin()) {}
+  void parse();
+  void print_poliz();
+  void print_expression();
 };
 
 #endif
